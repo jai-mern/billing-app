@@ -5,27 +5,39 @@ const SignupForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isSigningUp, setIsSigningUp] = useState(false); // State to track signup process
+
+  const isEmailValid = (email) => {
+    // Regular expression for email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isPasswordValid = (password) => {
+    // Password length validation
+    return password.length >= 8;
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setIsSigningUp(true); // Set isSigningUp to true when signup process starts
+    if (!isEmailValid(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!isPasswordValid(password)) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
     try {
       await signUp(email, password);
-      // Reset form fields and signup status on successful signup
-      setEmail('');
-      setPassword('');
-      setError('');
+      // Redirect to dashboard or perform other actions after successful signup
     } catch (error) {
       setError(error.message);
-    } finally {
-      setIsSigningUp(false); // Reset signup status regardless of success or failure
     }
   };
 
   return (
     <div>
-      <h2>Sign Up</h2>
+      <h2 style={{ color: 'blue' }}>Sign Up</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSignUp}>
         <input
@@ -42,13 +54,7 @@ const SignupForm = () => {
           placeholder="Password"
           required
         />
-        <button
-          type="submit"
-          style={{ backgroundColor: isSigningUp ? 'gray' : 'blue', cursor: isSigningUp ? 'not-allowed' : 'pointer' }}
-          disabled={isSigningUp}
-        >
-          {isSigningUp ? 'Signing Up...' : 'Sign Up'}
-        </button>
+        <button type="submit">Sign Up</button>
       </form>
     </div>
   );
